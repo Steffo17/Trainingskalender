@@ -147,3 +147,6 @@ th {
     color: white;
     padding: 8px;
 }
+.trained{
+    background-color: lightgreen;
+}
