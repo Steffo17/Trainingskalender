@@ -13,6 +13,9 @@ const monthYearLabel = document.getElementById("month-year");
 const prevButton = document.getElementById("prevMonth");
 const nextButton = document.getElementById("nextMonth");
 
+//Trainingstag speichern
+const trainingDays = {};
+
 // ───────────── Aktuell angezeigter Monat ─────────────
 let currentDate = new Date(); // speichert Monat, der gerade angezeigt wird
 
@@ -87,6 +90,10 @@ function renderCalendar() {
             tbody.appendChild(row);
             row = document.createElement("tr");
         }
+        const dateKey = `${day}.${month+1}.${year}`;
+        if (trainingDays[dateKey]){
+            td.classList.add("trained");
+        }
     }
 
     tbody.appendChild(row); // letzte Zeile anhängen
@@ -116,6 +123,10 @@ function loadExercise() {
     tbody.innerHTML = ""; // alte Daten löschen
 
     const data = localStorage.getItem(selectedDateKey);
+    const dateKey = selectedDateKey.replace("training_", "");
+    if(data) {
+        trainingdays[dateKey] = true;
+    }
     if (!data) return;
 
     const exercises = JSON.parse(data);
@@ -148,18 +159,24 @@ function addExercise() {
     const exercise = document.getElementById("exercise").value.trim();
     const sets = document.getElementById("sets").value.trim();
     const reps = document.getElementById("reps").value.trim();
-
+    
+    
     if (!exercise) { alert("Bitte eine Übung eingeben!"); return; }
     if (!sets || sets < 0) { alert("Bitte Anzahl der Sätze eingeben!"); return; }
     if (!reps || reps < 0) { alert("Bitte Anzahl der Wiederholungen eingeben!"); return; }
 
     addExerciseToTable(exercise, sets, reps);
     saveExercises(); // LocalStorage aktualisieren
+    
+    const dateKey = selectedDateKey.replace("training_", "")
+    trainingDays[dateKey] = true
+    renderCalendar();
+
 
     // Inputs leeren
     document.getElementById("exercise").value = "";
     document.getElementById("sets").value = "";
-    document.getElementById("reps").value = "";
+    document.getElementById("reps").value = ""; 
 }
 
 // ───────────── Trainingsdaten speichern ─────────────
